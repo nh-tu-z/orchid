@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.2",
+    "truffle": "^5.5.25",
     "web3": "^1.7.4",
     "web3.js-browser": "^0.2.0"
   }
