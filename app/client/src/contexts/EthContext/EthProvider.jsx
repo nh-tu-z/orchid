@@ -9,38 +9,53 @@ function EthProvider({ children }) {
   const init = useCallback(
     async artifact => {
       if (artifact) {
-        const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-        const accounts = await web3.eth.requestAccounts();
-        const networkID = await web3.eth.net.getId();
-        const { abi } = artifact;
-        let address, contract;
+        // connect to local blockchain Ganache
+        const web3 = new Web3("HTTP://127.0.0.1:7545")
+
+        let accounts;
+        await web3.eth.getAccounts()
+          .then(accs => accounts = accs)
+          .catch(err => console.log(err))
+        console.log(accounts)
+
+        let networkID;
+        await web3.eth.net.getId()
+          .then(id => networkID = id)
+          .catch(err => console.log(err))
+        console.log(networkID)
+
+        const { abi } = artifact
+        let address, contract
         try {
-          address = artifact.networks[networkID].address;
-          contract = new web3.eth.Contract(abi, address);
+          address = artifact.networks[networkID].address
+          contract = new web3.eth.Contract(abi, address)
         } catch (err) {
-          console.error(err);
+          console.error(err)
         }
         dispatch({
           type: actions.init,
           data: { artifact, web3, accounts, networkID, contract }
-        });
+        })
       }
-    }, []);
+    }, [])
 
   useEffect(() => {
+    console.log('we\'re in useEffect() no dependencies')
     const tryInit = async () => {
       try {
-        const artifact = require("../../contracts/SimpleStorage.json");
-        init(artifact);
+        const artifact = require("../../contracts/ItemManager.json")
+        console.log('artifact', artifact)
+        init(artifact)
       } catch (err) {
-        console.error(err);
+        console.error(err)
       }
     };
 
-    tryInit();
-  }, [init]);
+    tryInit()
+  }, [init])
 
   useEffect(() => {
+    console.log('we\'re in useEffect() with some dependencies');
     const events = ["chainChanged", "accountsChanged"];
     const handleChange = () => {
       init(state.artifact);
