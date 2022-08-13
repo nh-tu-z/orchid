@@ -1,10 +1,11 @@
-import React, { useReducer, useCallback, useEffect } from "react";
+import React, { useReducer, useCallback, useEffect, useState } from "react";
 import Web3 from "web3";
 import EthContext from "./EthContext";
 import { reducer, actions, initialState } from "./state";
 
 function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [contractState, setContractState] = useState({cost: 0, itemName: "exampleItem1", loaded: false})
 
   const init = useCallback(
     async artifact => {
@@ -23,6 +24,9 @@ function EthProvider({ children }) {
           .then(id => networkID = id)
           .catch(err => console.log(err))
         console.log(networkID)
+
+        setContractState({loaded: true})
+        console.log(contractState)
 
         const { abi } = artifact
         let address, contract
